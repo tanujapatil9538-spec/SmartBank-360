@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Loan Assessment - SmartBank 360</title>
+</head>
+<body>
+    <h1>SmartBank 360 - Loan Eligibility Assessment</h1>
+
+    <nav>
+        <a href="/">Dashboard</a> |
+        <a href="/accounts/">Accounts</a> |
+        <a href="/transactions/">Transactions</a> |
+        <a href="/fraud-detection/">Fraud Detection</a>
+    </nav>
+
+    <h2>Applicant Details</h2>
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <p>
+            <label>Monthly Income (₹)</label><br>
+            <input type="number" name="monthly_income" min="1" step="0.01" required>
+        </p>
+
+        <p>
+            <label>Existing Monthly EMI (₹)</label><br>
+            <input type="number" name="monthly_emi" min="0" step="0.01" value="0" required>
+        </p>
+
+        <p>
+            <label>Requested Loan Amount (₹)</label><br>
+            <input type="number" name="loan_amount" min="1" step="0.01" required>
+        </p>
+
+        <p>
+            <label>Credit Score (300–900)</label><br>
+            <input type="number" name="credit_score" min="300" max="900" required>
+        </p>
+
+        <button type="submit">Assess Eligibility</button>
+    </form>
+
+    {% if result %}
+        <hr>
+        <h2>Assessment Result</h2>
+
+        {% if result.eligible %}
+            <h3 style="color: green;">Eligible under demo rules</h3>
+        {% else %}
+            <h3 style="color: red;">Not Eligible under demo rules</h3>
+        {% endif %}
+
+        <p>Existing EMI to income ratio: {{ result.emi_ratio }}%</p>
+
+        <h3>Reasons</h3>
+        <ul>
+            {% for reason in result.reasons %}
+                <li>{{ reason }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <p><small>This is a project demonstration, not a real bank lending decision.</small></p>
+</body>
+</html>

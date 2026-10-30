@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBank 360 - Fraud Detection</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: #f4f7fb; color: #1f2937; }
+        header { background: #123b68; color: white; padding: 22px 30px; }
+        nav { background: #1d4f82; padding: 15px 30px; }
+        nav a { color: white; text-decoration: none; margin-right: 20px; }
+        main { padding: 30px; }
+        .card { background: white; padding: 24px; margin-bottom: 22px; border-radius: 10px; box-shadow: 0 2px 8px #00000012; }
+        label { display: block; font-weight: bold; margin-top: 16px; }
+        input, select { display: block; width: 100%; max-width: 420px; padding: 10px; margin-top: 8px; box-sizing: border-box; }
+        button { margin-top: 20px; padding: 11px 18px; background: #123b68; color: white; border: 0; border-radius: 6px; cursor: pointer; }
+        .result { margin-top: 20px; padding: 18px; border-radius: 8px; background: #e8f5e9; }
+        .error { margin-top: 20px; padding: 14px; background: #ffebee; border-radius: 8px; }
+        .risk { font-size: 22px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>SmartBank 360</h1>
+        <p>Banking Management System</p>
+    </header>
+    <nav>
+        <a href="/">Dashboard</a>
+        <a href="/accounts/">Accounts</a>
+        <a href="/transactions/">Transactions</a>
+        <a href="/fraud-detection/">Fraud Detection</a>
+        <a href="/loan-assessment/">Loan Assessment</a>
+    </nav>
+    <main>
+        <h2>Fraud Detection</h2>
+        <div class="card">
+            <p>Enter sample transaction details to calculate a rule-based risk score. This demo does not change account balances or confirm actual fraud.</p>
+
+            <form method="post">
+                {% csrf_token %}
+                <label for="amount">Transaction Amount (₹)</label>
+                <input id="amount" name="amount" type="number" min="0.01" step="0.01" required>
+
+                <label for="transaction_type">Transaction Type</label>
+                <select id="transaction_type" name="transaction_type" required>
+                    <option value="">Select type</option>
+                    <option value="Deposit">Deposit</option>
+                    <option value="Withdrawal">Withdrawal</option>
+                    <option value="Transfer">Transfer</option>
+                </select>
+
+                <label for="balance">Current Account Balance (₹)</label>
+                <input id="balance" name="balance" type="number" min="0" step="0.01" required>
+
+                <button type="submit">Check Transaction Risk</button>
+            </form>
+
+            {% if error %}
+                <div class="error">{{ error }}</div>
+            {% endif %}
+
+            {% if result %}
+                <div class="result">
+                    <h3>Risk Assessment Result</h3>
+                    <p class="risk">{{ result.result }}</p>
+                    <p>Risk Score: {{ result.risk_score }} / 100</p>
+                    <h4>Reasons</h4>
+                    <ul>
+                        {% for reason in result.reasons %}
+                            <li>{{ reason }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+</body>
+</html>

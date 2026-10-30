@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Register | SmartBank 360</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f1f5f9;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;color:#1e293b}
+.box{background:white;padding:30px;border-radius:12px;width: min(400px, 90%);box-shadow:0 4px 18px #0001}
+h1{color:#102a43}button{background:#2563eb;color:white;border:0;padding:12px;width:100%;border-radius:7px;cursor:pointer}
+input{width:100%;padding:10px;margin:7px 0 14px;box-sizing:border-box}
+.helptext{font-size:13px;color:#64748b}
+.errorlist{color:#b91c1c}
+a{color:#2563eb}
+</style>
+</head>
+<body>
+<div class="box">
+<h1>Create an account</h1>
+<p>Register for SmartBank 360.</p>
+<form method="post">
+{% csrf_token %}
+{{ form.as_p }}
+<button type="submit">Register</button>
+</form>
+<p>Already registered? <a href="{% url 'login' %}">Log in</a></p>
+</div>
+</body>
+</html>

@@ -1,0 +1,110 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBank 360 - Accounts</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: #f4f7fb; color: #1f2937; }
+        header { background: #123b68; color: white; padding: 22px 30px; }
+        nav { background: #1d4f82; padding: 15px 30px; }
+        nav a { color: white; text-decoration: none; margin-right: 20px; }
+        main { padding: 30px; }
+        .card { background: white; padding: 24px; margin-bottom: 24px; border-radius: 10px; box-shadow: 0 2px 8px #00000012; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 14px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #edf3f9; }
+        .button { display: inline-block; margin-top: 20px; padding: 10px 16px; background: #123b68; color: white; text-decoration: none; border: none; border-radius: 6px; cursor: pointer; }
+        input, select { display: block; width: 100%; max-width: 420px; padding: 10px; margin: 8px 0 18px; box-sizing: border-box; }
+        label { font-weight: bold; }
+        .empty { text-align: center; padding: 22px; color: #6b7280; }
+        .message { padding: 12px; margin-bottom: 12px; border-radius: 6px; background: #e8f5e9; }
+        .error { background: #ffebee; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>SmartBank 360</h1>
+        <p>Banking Management System</p>
+    </header>
+    <nav>
+        <a href="/">Dashboard</a>
+        <a href="/accounts/">Accounts</a>
+        <a href="/transactions/">Transactions</a>
+        <a href="/fraud-detection/">Fraud Detection</a>
+        <a href="/loan-assessment/">Loan Assessment</a>
+    </nav>
+    <main>
+        <h2>Bank Accounts</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {% if message.tags == 'error' %}error{% endif %}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="card">
+            <p>View all registered bank accounts below.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Account Number</th>
+                        <th>Account Holder</th>
+                        <th>Account Type</th>
+                        <th>Balance (INR)</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for account in accounts %}
+                    <tr>
+                        <td>{{ account.account_number }}</td>
+                        <td>{{ account.user.username }}</td>
+                        <td>{{ account.account_type }}</td>
+                        <td>{{ account.balance|floatformat:2 }}</td>
+                        <td>{% if account.is_active %}Active{% else %}Inactive{% endif %}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="empty">No bank accounts found. Add an account through Admin.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a class="button" href="/admin/">Manage Accounts in Admin</a>
+            <a class="button" href="/">Back to Dashboard</a>
+        </div>
+
+        <div class="card">
+            <h2>Deposit or Withdraw</h2>
+            <p>Select an active account and enter the amount.</p>
+
+            <form method="post" action="{% url 'process_transaction' %}">
+                {% csrf_token %}
+
+                <label for="account_number">Bank Account</label>
+                <select id="account_number" name="account_number" required>
+                    <option value="">Select account</option>
+                    {% for account in accounts %}
+                        {% if account.is_active %}
+                            <option value="{{ account.account_number }}">{{ account.account_number }} — {{ account.user.username }} (₹{{ account.balance }})</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+
+                <label for="transaction_type">Transaction Type</label>
+                <select id="transaction_type" name="transaction_type" required>
+                    <option value="">Select type</option>
+                    <option value="Deposit">Deposit</option>
+                    <option value="Withdrawal">Withdrawal</option>
+                </select>
+
+                <label for="amount">Amount (₹)</label>
+                <input id="amount" name="amount" type="number" min="0.01" step="0.01" required>
+
+                <button class="button" type="submit">Submit Transaction</button>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

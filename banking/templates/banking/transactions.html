@@ -1,0 +1,98 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBank 360 - Transactions</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: #f4f7fb; color: #1f2937; }
+        header { background: #123b68; color: white; padding: 22px 30px; }
+        nav { background: #1d4f82; padding: 15px 30px; }
+        nav a { color: white; text-decoration: none; margin-right: 18px; }
+        main { padding: 30px; }
+        .card { background: white; padding: 22px; border-radius: 10px; margin-bottom: 24px; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #edf3f9; }
+        input, select { padding: 10px; margin: 6px 0 14px; width: 100%; max-width: 420px; display: block; }
+        button { background: #123b68; color: white; padding: 11px 18px; border: 0; border-radius: 5px; cursor: pointer; }
+        .message { padding: 12px; background: #e7f5ec; border-radius: 6px; }
+        .error { color: #b91c1c; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>SmartBank 360</h1>
+        <p>Banking Management System</p>
+    </header>
+    <nav>
+        <a href="/">Dashboard</a>
+        <a href="/accounts/">Accounts</a>
+        <a href="/transactions/">Transactions</a>
+        <a href="/fraud-detection/">Fraud Detection</a>
+        <a href="/loan-assessment/">Loan Assessment</a>
+    </nav>
+    <main>
+        <h2>Transactions</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                <p class="message">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        <section class="card">
+            <h3>Make a Test Transaction</h3>
+            <p>Use this form with sample accounts only. This is a learning prototype, not a real banking service.</p>
+            <form method="post">
+                {% csrf_token %}
+                <label for="account_number">Account Number</label>
+                <input id="account_number" name="account_number" value="SB36010001" required>
+
+                <label for="transaction_type">Transaction Type</label>
+                <select id="transaction_type" name="transaction_type" required>
+                    <option value="Deposit">Deposit</option>
+                    <option value="Withdrawal">Withdrawal</option>
+                </select>
+
+                <label for="amount">Amount (INR)</label>
+                <input id="amount" name="amount" type="number" min="0.01" step="0.01" required>
+
+                <button type="submit">Submit Transaction</button>
+            </form>
+        </section>
+
+        <section class="card">
+            <h3>Transaction History</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Account</th>
+                        <th>Type</th>
+                        <th>Amount (INR)</th>
+                        <th>Date and Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                    <tr>
+                        <td>{{ transaction.account.account_number }}</td>
+                        <td>{{ transaction.transaction_type }}</td>
+                        <td>{{ transaction.amount|floatformat:2 }}</td>
+                        <td>{{ transaction.timestamp|date:"d M Y, H:i" }}</td>
+                        <td>{{ transaction.status }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5">No transactions found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,19 @@
+venv/
+__pycache__/
+*.py[cod]
+db.sqlite3
+.env
+.idea/
+.vscode/
+
+# Development helper scripts
+secure_customer_data.py
+setup_auth.py
+update_dashboard.py
+update_loan_view.py
+update_transaction.py
+
+# Backup files
+*.bak
+*.auth-backup
+*.dashboard-backup
